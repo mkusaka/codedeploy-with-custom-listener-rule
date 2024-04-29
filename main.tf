@@ -110,6 +110,27 @@ resource "aws_lb_listener" "front_end" {
   }
 }
 
+resource "aws_lb_listener_rule" "test_path_rule" {
+  listener_arn = aws_lb_listener.front_end.arn
+
+  priority = 10  # 優先順位は他のルールと衝突しないように選ぶ
+
+  action {
+    type = "fixed-response"
+    fixed_response {
+      content_type = "text/plain"
+      message_body = "This is a test response"
+      status_code  = "200"
+    }
+  }
+
+  condition {
+    path_pattern {
+      values = ["/test"]
+    }
+  }
+}
+
 resource "aws_lb_listener" "front_end_green" {
   load_balancer_arn = aws_lb.axum_lb.arn
   port              = "81"
@@ -220,6 +241,10 @@ resource "aws_ecs_service" "axum_service" {
     target_group_arn = aws_lb_target_group.axum_tg.arn
     container_name   = "axum-app"
     container_port   = 80
+  }
+
+  lifecycle {
+    ignore_changes = [task_definition, load_balancer]
   }
 }
 
