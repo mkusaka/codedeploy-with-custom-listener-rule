@@ -1,7 +1,7 @@
 [
   {
     "name": "axum-app",
-    "image": "nginx:latest",
+    "image": "httpd:latest",
     "cpu": 256,
     "memory": 512,
     "essential": true,
